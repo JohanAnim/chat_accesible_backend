@@ -2,3 +2,5 @@
 
 # excluir la carpeta de módulos de node
 node_modules/
+# excluir el archivo de la variable de entorno
+.env
