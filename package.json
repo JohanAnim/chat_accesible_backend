@@ -1,0 +1,20 @@
+{
+  "name": "chat_accesible_back",
+  "version": "1.0.0",
+  "description": "El backend del chat",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "JohanG",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.5"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "socket.io": "^4.7.5"
+  }
+}
