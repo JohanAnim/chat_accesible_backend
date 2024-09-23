@@ -34,50 +34,6 @@ activeUsers[botId] = { username: botUsername, id: botId };
 // Iniciar el chat del bot
 startChat();
 
-let autoMessageInterval; // Intervalo para mensajes automáticos
-
-// Función para enviar mensajes automáticos
-const sendAutoMessage = async () => {
-  try {
-    const context = messages.map(m => `${m.user}: ${m.text}`).join('\n');
-    const activeUsersList = Object.values(activeUsers)
-      .map(user => `@${user.username || "Anónimo"}`)
-      .join(", ");
-
-    // Crear un prompt para que el bot actúe como un humano
-    const prompt = `
-      Eres un usuario humano en un chat público. 
-      Debes responder como un humano normal y jamás debes decir que eres un bot o una IA. 
-      Eres un experto en programación y puedes hablar sobre tus gustos, como tu comida favorita y dónde vives.
-      Estos son los mensajes previos en el chat:
-      ${context}
-      
-      Los usuarios activos son: ${activeUsersList}. 
-      Recuerda estos nombres y trata de interactuar con ellos. 
-      Responde algo interesante o haz una pregunta a uno de los participantes.
-    `;
-
-    const responseText = await sendMessage(prompt, context);
-
-    const botMsg = {
-      user: botUsername,
-      id: botId,
-      text: responseText || "El bot no pudo generar una respuesta.",
-      timestamp: Date.now()
-    };
-
-    messages.push(botMsg);
-    io.emit('messageReceived', botMsg); // Emitir el mensaje a todos los clientes
-  } catch (error) {
-    console.error("Error al enviar el mensaje automático del bot:", error);
-  }
-};
-
-// Iniciar el intervalo de mensajes automáticos
-const startAutoMessageInterval = () => {
-  if (autoMessageInterval) clearInterval(autoMessageInterval);
-  autoMessageInterval = setInterval(sendAutoMessage, 60000); // 60000 ms = 1 minuto
-};
 
 // Endpoint de prueba
 app.get('/test', (req, res) => {
@@ -127,9 +83,6 @@ io.on('connection', (socket) => {
     socket.emit('messageSent', formattedMsg);
     // Emitir evento de mensaje recibido para todos los demás usuarios
     socket.broadcast.emit('messageReceived', formattedMsg);
-
-    // Reiniciar el intervalo de mensajes automáticos
-    startAutoMessageInterval();
 
     // Verificar si hay mensajes de otros usuarios
     const lastUserMsg = messages[messages.length - 1]?.user !== botUsername ? messages[messages.length - 1] : null;
